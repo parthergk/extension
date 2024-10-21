@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Continuous Extension",
+  "name": "Continuous Group Extension",
   "version": "1.0",
-  "description": "An extension that runs continuously until manually stopped.",
+  "description": "An extension that stays active as long as the user is part of a group.",
   "background": {
     "service_worker": "background.js"
   },
@@ -10,8 +10,8 @@
     "storage",
     "tabs",
     "activeTab",
-    "scripting",
-    "alarms"
+    "alarms",
+    "scripting"
   ],
   "action": {
     "default_popup": "popup.html"
