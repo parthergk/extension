@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="popup.css">
+  <title>Group Content Sharing</title>
+</head>
+<body>
+  <div id="app">
+    <h1>Groups</h1>
+    
+    <!-- Create Group Section -->
+    <div>
+      <h3>Create Group</h3>
+      <input type="text" id="group-name" placeholder="Enter group name">
+      <button id="create-group-btn">Create Group</button>
+    </div>
+
+    <!-- Join Group Section -->
+    <div>
+      <h3>Join Group</h3>
+      <input type="text" id="group-code" placeholder="Enter group code">
+      <button id="join-group-btn">Join Group</button>
+    </div>
+
+    <!-- List of Groups -->
+    <div>
+      <h3>Your Groups</h3>
+      <ul id="group-list"></ul>
+    </div>
+
+    <!-- Share Content Section -->
+    <div>
+      <h3>Share Content</h3>
+      <button id="share-content-btn">Share Current Tab</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
