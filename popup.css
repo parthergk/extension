@@ -1,38 +1,53 @@
 body {
-    font-family: Arial, sans-serif;
-    width: 300px;
-    padding: 20px;
-  }
-  
-  h1 {
-    font-size: 18px;
-  }
-  
-  input {
-    width: 100%;
-    padding: 5px;
-    margin-bottom: 10px;
-  }
-  
-  button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  li {
-    margin-bottom: 10px;
-  }
-  
+  font-family: Arial, sans-serif;
+  padding: 10px;
+}
+
+.nav-tabs {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.tab-link {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border: none;
+  font-size: 14px;
+}
+
+.tab-link.active {
+  background-color: #007BFF;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+input {
+  margin-bottom: 10px;
+  padding: 5px;
+  width: 100%;
+}
+
+button {
+  padding: 10px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.group-list, .shared-items-list {
+  margin-top: 20px;
+}

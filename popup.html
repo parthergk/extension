@@ -1,42 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="popup.css">
-  <title>Group Content Sharing</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Sharing Extension</title>
+    <link rel="stylesheet" href="popp.css">
 </head>
 <body>
-  <div id="app">
-    <h1>Groups</h1>
-    
-    <!-- Create Group Section -->
-    <div>
-      <h3>Create Group</h3>
-      <input type="text" id="group-name" placeholder="Enter group name">
-      <button id="create-group-btn">Create Group</button>
+    <div class="nav-tabs">
+        <button class="tab-link active" data-tab="groups">Groups</button>
+        <button class="tab-link" data-tab="shared-content">Shared Content</button>
     </div>
 
-    <!-- Join Group Section -->
-    <div>
-      <h3>Join Group</h3>
-      <input type="text" id="group-code" placeholder="Enter group code">
-      <button id="join-group-btn">Join Group</button>
+    <!-- Groups Section -->
+    <div id="groups" class="tab-content active">
+        <h2>Groups</h2>
+
+        <!-- Create Group Section -->
+        <div class="create-group">
+            <h3>Create a new group</h3>
+            <input type="text" id="new-group-name" placeholder="Group name">
+            <button id="create-group-btn">Create Group</button>
+        </div>
+
+        <!-- Join Group Section -->
+        <div class="join-group">
+            <h3>Join an existing group</h3>
+            <input type="text" id="group-code" placeholder="Enter group code">
+            <button id="join-group-btn">Join Group</button>
+        </div>
+
+        <!-- Your Group List -->
+        <div class="group-list">
+            <h3>Your Group</h3>
+            <!-- Group item will be dynamically added here after joining/creating a group -->
+            <!-- This will show the group name, and a button to leave the group -->
+        </div>
     </div>
 
-    <!-- List of Groups -->
-    <div>
-      <h3>Your Groups</h3>
-      <ul id="group-list"></ul>
+    <!-- Shared Content Section -->
+    <div id="shared-content" class="tab-content">
+        <h2>Shared Content</h2>
+
+        <!-- Share Content Button -->
+        <div class="share-content">
+            <button id="share-content-btn">Share Current Tab Content</button>
+        </div>
+
+        <!-- Shared Items List -->
+        <div class="shared-items-list">
+            <!-- Shared items will be dynamically added here based on the group the user is part of -->
+        </div>
     </div>
 
-    <!-- Share Content Section -->
-    <div>
-      <h3>Share Content</h3>
-      <button id="share-content-btn">Share Current Tab</button>
-    </div>
-  </div>
-
-  <script src="popup.js"></script>
+    <script src="popup.js"></script>
 </body>
 </html>
