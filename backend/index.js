@@ -1,106 +1,128 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cors = require('cors'); // Add this line to import cors
+import express from "express";
+import mongoose from "mongoose";
+import bodyParser from "body-parser";
+import { nanoid } from "nanoid";
+import cors from "cors";
+import dotenv from "dotenv";
+import helmet from "helmet";  // Add helmet for basic security headers
+import rateLimit from "express-rate-limit";  // Add rate-limiting to prevent abuse
+
+dotenv.config();
 
 const app = express();
-const port = 3000;
 
-// Use CORS middleware
-app.use(cors());
+// Configuration
+const config = {
+  PORT: process.env.PORT || 3000,
+  MONGODB_URL: process.env.MONGODB_URL,
+};
 
+// Middleware
+app.use(cors());  // Cross-Origin Resource Sharing
+app.use(helmet());  // Helmet helps secure the app by setting various HTTP headers
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb+srv://gauravKumar:gaurav123@cluster0.swj1o.mongodb.net/?retryWrites=true&w=majority',
-    { dbName: "group", useNewUrlParser: true, useUnifiedTopology: true }
-  )
-
-// Define Group Schema
-const groupSchema = new mongoose.Schema({
-    name: String,
-    code: String,
-    members: [String],  // List of member IDs or emails
-    sharedItems: [
-        {
-            url: String,
-            sharedBy: String,
-            sharedAt: { type: Date, default: Date.now }
-        }
-    ]
+// Rate Limiting: Limit repeated requests to public APIs
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,  // 15 minutes
+  max: 100,  // Limit each IP to 100 requests per window
+  message: "Too many requests, please try again later.",
 });
+app.use(limiter);
 
-const Group = mongoose.model('Group', groupSchema);
+// MongoDB Connection
+let isConnected = false;
+const connectToDb = async () => {
+  if (isConnected) return;
 
-// API to create a group
-app.post('/groups/create', async (req, res) => {
-    const { name, userId } = req.body;
-
-    const newGroup = new Group({
-        name: name,
-        code: Date.now().toString(),  // Generate a unique group code
-        members: [userId]
+  try {
+    await mongoose.connect(config.MONGODB_URL, {
+      dbName: "group",
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
+    isConnected = true;
+    console.log("Database connected");
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    process.exit(1);  // Exit the process if the connection fails
+  }
+};
+connectToDb();
 
-    await newGroup.save();
-    console.log("gruop is created", name);
-    
-    res.json({ success: true, group: newGroup });
+const groupSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  code: { type: String, required: true, unique: true },
+  sharedItems: [
+    {
+      url: { type: String, required: true, unique: true }, // This won't work directly in arrays
+      sharedAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
-// API to join a group
-app.post('/groups/join', async (req, res) => {
-    const { code, userId } = req.body;
 
-    const group = await Group.findOne({ code });
-    if (!group) return res.status(404).json({ success: false, message: "Group not found" });
+const Group = mongoose.model("Group", groupSchema);
 
-    if (!group.members.includes(userId)) {
-        group.members.push(userId);
-        await group.save();
-    }
+// Create Group
+app.post("/groups/create", async (req, res) => {
+  const { name } = req.body;
+  if (!name) return res.status(400).json({ success: false, message: "Group name is required" });
 
-    console.log("Join this group");
-    
-    res.json({ success: true, group });
+  const newGroup = new Group({ name, code: nanoid(8) });
+  await newGroup.save();
+
+  res.json({ success: true, group: newGroup });
 });
 
-// API to share content with a group
-app.post('/groups/share', async (req, res) => {
-    const { groupId, url, userId } = req.body;
+// Join Group
+app.post("/groups/join", async (req, res) => {
+  const { code } = req.body;
+  const group = await Group.findOne({ code });
+  if (!group) return res.status(404).json({ success: false, message: "Group not found" });
 
-    const group = await Group.findById(groupId);
-    if (!group) return res.status(404).json({ success: false, message: "Group not found" });
-
-    group.sharedItems.push({ url, sharedBy: userId });
-    await group.save();
-
-    console.log("Shared content",url);
-    
-
-    res.json({ success: true, group });
+  res.json({ success: true, group });
 });
 
-// API to get group details and shared content
-app.get('/groups/:groupId', async (req, res) => {
-    const { groupId } = req.params;
+// Share Content
+app.post("/groups/share", async (req, res) => {
+  const { groupId, url } = req.body;
+  
+  const group = await Group.findById(groupId);
+  if (!group) {
+    return res.status(404).json({ success: false, message: "Group not found" });
+  }
 
-    const group = await Group.findById(groupId);
-    if (!group) return res.status(404).json({ success: false, message: "Group not found" });
+  // Check if the URL already exists
+  const urlExists = group.sharedItems.some(item => item.url === url);
+  if (urlExists) {
+    return res.status(400).json({ success: false, message: "This URL has already been shared." });
+  }
 
-    res.json({ success: true, group });
+  // Add shared content
+  group.sharedItems.push({ url });
+  await group.save();
+  
+  res.json({ success: true });
 });
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+
+// Get Shared Items
+app.get("/groups/:groupId/items", async (req, res) => {
+  const { groupId } = req.params;
+  const group = await Group.findById(groupId);
+  if (!group) return res.status(404).json({ success: false, message: "Group not found" });
+
+  res.json({ success: true, items: group.sharedItems });
 });
 
-// API to get shared items for a specific group
-app.get('/groups/:groupId/items', async (req, res) => {
-    const { groupId } = req.params;
-
-    const group = await Group.findById(groupId);
-    if (!group) return res.status(404).json({ success: false, message: "Group not found" });
-
-    res.json({ success: true, items: group.sharedItems }); // Return sharedItems for the group
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ success: false, message: "Something went wrong" });
 });
 
+// Start Server
+app.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`);
+});

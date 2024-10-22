@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Content Sharing Extension</title>
-    <link rel="stylesheet" href="popp.css">
+
+    <!-- Development CSP allowing localhost -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' http://localhost:3000; script-src 'self'; style-src 'self'; img-src 'self';">
+
+    <!-- Disable browser caching sensitive data -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 </head>
+
 <body>
     <div class="nav-tabs">
         <button class="tab-link active" data-tab="groups">Groups</button>
@@ -19,14 +29,14 @@
         <!-- Create Group Section -->
         <div class="create-group">
             <h3>Create a new group</h3>
-            <input type="text" id="new-group-name" placeholder="Group name">
+            <input type="text" id="new-group-name" placeholder="Group name" maxlength="50" aria-label="Group name">
             <button id="create-group-btn">Create Group</button>
         </div>
 
         <!-- Join Group Section -->
         <div class="join-group">
             <h3>Join an existing group</h3>
-            <input type="text" id="group-code" placeholder="Enter group code">
+            <input type="text" id="group-code" placeholder="Enter group code" maxlength="8" aria-label="Group code">
             <button id="join-group-btn">Join Group</button>
         </div>
 
@@ -34,7 +44,6 @@
         <div class="group-list">
             <h3>Your Group</h3>
             <!-- Group item will be dynamically added here after joining/creating a group -->
-            <!-- This will show the group name, and a button to leave the group -->
         </div>
     </div>
 
@@ -55,4 +64,5 @@
 
     <script src="popup.js"></script>
 </body>
+
 </html>
