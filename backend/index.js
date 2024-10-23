@@ -64,16 +64,21 @@ const groupSchema = new mongoose.Schema({
 
 const Group = mongoose.model("Group", groupSchema);
 
-// Create Group
 app.post("/groups/create", async (req, res) => {
-  const { name } = req.body;
-  if (!name) return res.status(400).json({ success: false, message: "Group name is required" });
+  let { name } = req.body;
+  if (!name) {
+    return res.status(400).json({ success: false, message: "Group name is required" });
+  }
+
+  // Capitalize the first letter of the group name
+  name = name.charAt(0).toUpperCase() + name.slice(1);
 
   const newGroup = new Group({ name, code: nanoid(8) });
   await newGroup.save();
 
   res.json({ success: true, group: newGroup });
 });
+
 
 // Join Group
 app.post("/groups/join", async (req, res) => {
