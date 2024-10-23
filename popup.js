@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <span> (Code: ${sanitizeInput(
               userGroup.code
             )})</span> <!-- Displaying the group code -->
-            <button class="leave-group-btn" data-group-id="${
+            <button class="leave-group-btn share-button" data-group-id="${
               userGroup._id
             }">Leave</button>
         </div>`
@@ -186,4 +186,18 @@ document.addEventListener("DOMContentLoaded", function () {
       alert("You have left the group.");
     }
   });
+
+  document.querySelectorAll(".tab-link").forEach((tabLink) => {
+    tabLink.addEventListener("click", function () {
+        // Remove 'active' class from all tab links and contents
+        document.querySelectorAll(".tab-link").forEach((link) => link.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach((content) => content.classList.remove("active"));
+
+        // Add 'active' class to the clicked tab and its corresponding content
+        this.classList.add("active");
+        const tabName = this.querySelector(".tab-name").getAttribute("data-tab");
+        document.getElementById(tabName).classList.add("active");
+    });
+});
+
 });

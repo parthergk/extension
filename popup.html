@@ -19,50 +19,51 @@
 </head>
 
 <body>
-    <div class="nav-tabs">
-        <h1 class="tab-link" data-tab="shared-content">Shared Content</h1>
-        <h1 class="tab-link " data-tab="groups">Groups</h1>
-    </div>
-
-    <!-- Groups Section -->
-    <div id="groups" class="tab-content ">
-        <h2>Groups</h2>
-
-        <!-- Create Group Section -->
-        <div class="create-group">
-            <h3>Create a new group</h3>
-            <input type="text" id="new-group-name" placeholder="Group name" maxlength="50" aria-label="Group name">
-            <button id="create-group-btn">Create Group</button>
+    <div class="container">
+        <div class="nav-tabs">
+            <div class="tab-link active">
+                <span class="tab-name" data-tab="shared-content">Shared Content</span>
+            </div>
+            <div class="tab-link">
+                <span class="tab-name" data-tab="groups">Groups</span>
+            </div>
         </div>
 
-        <!-- Join Group Section -->
-        <div class="join-group">
-            <h3>Join an existing group</h3>
-            <input type="text" id="group-code" placeholder="Enter group code" maxlength="8" aria-label="Group code">
-            <button id="join-group-btn">Join Group</button>
+        <!-- Shared Content Section -->
+        <div id="shared-content" class="tab-content active">
+            <!-- Share Content Button -->
+            <div class="share-content">
+                <button class="share-button" id="share-content-btn">Share Current Tab Content</button>
+            </div>
+
+            <!-- Shared Items List -->
+            <div class="shared-items-list">
+                <!-- Shared items will be dynamically added here based on the group the user is part of -->
+            </div>
         </div>
 
-        <!-- Your Group List -->
-        <div class="group-list">
-            <h3>Your Group</h3>
-            <div id="group-info"></div> <!-- Updated placeholder for group info -->
-        </div>
+        <!-- Groups Section -->
+        <div id="groups" class="tab-content">
+            <!-- Create Group Section -->
+            <div class="create-group group">
+                <h3 class="title">Create a new Group</h3>
+                <input class="group-input" type="text" id="new-group-name" placeholder="Group name" maxlength="50" aria-label="Group name">
+                <button class="share-button" id="create-group-btn">Create Group</button>
+            </div>
 
+            <!-- Join Group Section -->
+            <div class="join-group group">
+                <h3 class="title">Join an existing group</h3>
+                <input class="group-input" type="text" id="group-code" placeholder="Enter group code" maxlength="8" aria-label="Group code">
+                <button class="share-button" id="join-group-btn">Join Group</button>
+            </div>
 
-    </div>
-
-    <!-- Shared Content Section -->
-    <div id="shared-content" class="tab-content">
-        <h2>Shared Content</h2>
-
-        <!-- Share Content Button -->
-        <div class="share-content">
-            <button id="share-content-btn">Share Current Tab Content</button>
-        </div>
-
-        <!-- Shared Items List -->
-        <div class="shared-items-list">
-            <!-- Shared items will be dynamically added here based on the group the user is part of -->
+            <!-- Your Group List -->
+            <div class="group-list">
+                <h3>Your Group</h3>
+                <div id="group-info">
+                </div> <!-- Updated placeholder for group info -->
+            </div>
         </div>
     </div>
 

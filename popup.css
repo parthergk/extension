@@ -1,112 +1,162 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #050505;
+  color: #ffffff;
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  width: 380px;
+  height: 580px;
+  box-sizing: border-box;
 }
 
-.container {
-  max-width: 800px;
-  margin: auto;
+.container{
+  padding: 20px 16px;
 }
 
-.tabs {
-  display: flex;
-  border-bottom: 2px solid #ccc;
-}
-
-.tab {
-  flex: 1;
-  padding: 10px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.tab.active {
-  font-weight: bold;
-  border-bottom: 2px solid #007bff;
-}
-
-.icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 4px;
-}
-
-.card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-}
-
-.card-header {
-  padding: 16px;
-  border-bottom: 1px solid #ddd;
-}
-
-.card-title {
-  margin: 0;
-}
-
-.card-content {
-  padding: 16px;
-}
-
-.input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-}
-
-.button.secondary {
-  background-color: #6c757d;
-}
-
-.button.destructive {
-  background-color: #dc3545;
-}
-
-.group-info {
+.nav-tabs {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #e9ecef;
-  padding: 10px;
-  border-radius: 4px;
+  background-color: #333333;
+  padding: 5px;
+  border-radius: 12px;
 }
 
-.code {
-  font-size: 0.9em;
-  color: #6c757d;
+.tab-link {
+  height: 35px;
+  width: 45%;
+  padding: 5px;
+  background-color: transparent;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
 }
 
-.shared-links {
-  margin-top: 10px;
+.tab-link.active {
+  height: 35px;
+  width: 45%;
+  background-color: #050505;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
 }
 
-.link {
-  padding: 10px;
-  background-color: #e9ecef;
-  border-radius: 4px;
-  margin-bottom: 5px;
-  transition: background-color 0.2s;
+.tab-name{
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
 }
 
-.link:hover {
-  background-color: #dee2e6;
+.tab-content.active{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
 
-.full-width {
+.tab-content{
+  display: none;
+}
+
+.share-content{
   width: 100%;
+}
+.share-button{
+  width: 100%;
+  height: 40px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.shared-items-list{
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-direction: column; 
+}
+
+.shared-item{
+  height: 35px;
+  background-color: #333333;
+  color: #CCCCCC;
+  border-radius: 12px;
+  text-align: center;
+  padding: 5px 10px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.shared-item a {
+  font-size: 16px;
+  text-decoration: none;
+  color: #CCCCCC;
+  display: inline-block; /* Allows text truncation */
+  white-space: nowrap; /* Prevents the text from wrapping to the next line */
+  overflow: hidden; /* Hides the overflow text */
+  text-overflow: ellipsis; /* Adds the ellipsis (...) to the truncated text */
+}
+
+.group{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.title{
+  font-size: 18px;
+  font-weight: 400;
+  margin: 0px;
+}
+
+.group-input{
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  height: 35px;
+  padding-inline: 10px;
+  border-radius: 12px;
+  background-color: transparent;
+  border: 1px solid #ffffff;
+}
+
+.group-list{
+  width: 100%;
+  border-top: 1px solid #ffffff;
+  padding-top: 15px;
+  margin-top: 25px;
+}
+
+.group-list h3{
+  margin: 0px;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 5px;
+}
+
+.group-item:first-child{
+  font-size: 14px;
+  color: #CCCCCC;
+}
+
+
+.leave-group-btn{
+  display: flex;
+  margin: 15px auto;
+  display: block;
+  width: 120px;
+  background-color: #333333;
 }
