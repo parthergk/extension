@@ -104,12 +104,13 @@ app.post("/groups/share", async (req, res) => {
     return res.status(400).json({ success: false, message: "This URL has already been shared." });
   }
 
-  // Add shared content
+
   group.sharedItems.push({ url });
   await group.save();
   
-  res.json({ success: true });
+  res.json({ success: true, item: { url } });
 });
+
 
 
 // Get Shared Items

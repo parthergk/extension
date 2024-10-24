@@ -4,18 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const shareContentBtn = document.getElementById("share-content-btn");
   const groupList = document.querySelector(".group-list");
   const sharedItemsList = document.querySelector(".shared-items-list");
-
-  let userGroup = null;
   const apiUrl = "https://share-url.onrender.com"; // Use HTTPS for secure communication
-
-  // Check if user already has a group stored
-  chrome.storage.local.get(["userGroup"], function (result) {
-    if (result.userGroup) {
-      userGroup = result.userGroup;
-      updateGroupList();
-      loadGroupItems(userGroup._id);
-    }
-  });
+  let userGroup = null;
 
   // Input sanitization function
   function sanitizeInput(input) {
@@ -24,15 +14,88 @@ document.addEventListener("DOMContentLoaded", function () {
     return element.innerHTML;
   }
 
-  // Create Group
+  function addSharedItemToUI(item) {
+    console.log("itemshared",item);
+    const sharedItem = document.createElement("div");
+    sharedItem.classList.add("shared-item");
+    sharedItem.innerHTML = `<a href="${sanitizeInput(item.url)}" target="_blank" rel="noopener noreferrer">${sanitizeInput(item.url)}</a>`;
+    sharedItemsList.appendChild(sharedItem);
+    // Check if item and item.url exist
+    // if (item && item.url) {
+    //   const sharedItem = document.createElement('div');
+    //   sharedItem.classList.add('shared-item');
+    //   sharedItem.innerHTML = `
+    //     <a href="${sanitizeInput(item.url)}" target="_blank" rel="noopener noreferrer">${sanitizeInput(item.url)}</a>
+    //     <span>Shared at: ${new Date(item.sharedAt).toLocaleString()}</span>
+    //   `;
+    //   sharedItemsList.appendChild(sharedItem);
+    // } else {
+    //   console.error("Error: Shared item is missing or doesn't have a URL:", item);
+    // }
+  }
+  
+
+
+  // Update Group List UI
+  function updateGroupList() {
+    const groupInfo = document.getElementById("group-info");
+    groupInfo.innerHTML = userGroup
+      ? `
+        <div class="group-item" id="${userGroup._id}">
+            <span>${sanitizeInput(userGroup.name)}</span>
+            <span> (Code: ${sanitizeInput(userGroup.code)})</span>
+            <button class="leave-group-btn share-button" data-group-id="${userGroup._id}">Leave</button>
+        </div>`
+      : "You are not part of any group.";
+  }
+
+  // Load Group Items from the backend
+  async function loadGroupItems(groupId) {
+    try {
+      const response = await fetch(`${apiUrl}/groups/${groupId}/items`);
+      const data = await response.json();
+      if (data.success) {
+        sharedItemsList.innerHTML = ''; // Clear current list
+        data.items.forEach(addSharedItemToUI);
+      }
+    } catch (error) {
+      console.error("Error loading group items:", error);
+    }
+  }
+
+  // Share Content with the Group
+  async function shareContent(contentUrl) {
+    try {
+      const response = await fetch(`${apiUrl}/groups/share`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": "secure-csrf-token",
+        },
+        body: JSON.stringify({ groupId: userGroup._id, url: contentUrl }),
+      });
+      const data = await response.json();
+      console.log("data",data);
+      
+      if (data.success) {
+        // Add the newly shared item to the UI directly
+        console.log("data-item",data.item);
+        addSharedItemToUI(data.item); // Assume the backend returns the new item in `data.item`
+      } else {
+        alert(data.message || "Failed to share the URL.");
+      }
+    } catch (error) {
+      console.error("Error sharing content:", error);
+      alert("An error occurred while sharing the content.");
+    }
+  }
+
+  // Event: Create Group
   createGroupBtn.addEventListener("click", async function () {
     if (userGroup) return alert("You are already part of a group.");
 
-    const groupName = sanitizeInput(
-      document.getElementById("new-group-name").value.trim()
-    );
+    const groupName = sanitizeInput(document.getElementById("new-group-name").value.trim());
 
-    // Check if groupName is empty
     if (!groupName) {
       return alert("Group name cannot be empty.");
     }
@@ -43,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-CSRF-Token": "secure-csrf-token", // Add CSRF token for protection
+            "X-CSRF-Token": "secure-csrf-token",
           },
           body: JSON.stringify({ name: groupName }),
         });
@@ -63,15 +126,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Join Group
+  // Event: Join Group
   joinGroupBtn.addEventListener("click", async function () {
     if (userGroup) return alert("You are already part of a group.");
 
-    const groupCode = sanitizeInput(
-      document.getElementById("group-code").value.trim()
-    );
+    const groupCode = sanitizeInput(document.getElementById("group-code").value.trim());
 
-    // Check if groupCode is empty
     if (!groupCode) {
       return alert("Group code cannot be empty.");
     }
@@ -101,82 +161,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Share Content
+  // Event: Share Content
   shareContentBtn.addEventListener("click", async function () {
     if (!userGroup) return alert("Join or create a group first.");
 
-    chrome.tabs.query(
-      { active: true, currentWindow: true },
-      async function (tabs) {
-        const contentUrl = sanitizeInput(tabs[0].url);
-        try {
-          const response = await fetch(`${apiUrl}/groups/share`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRF-Token": "secure-csrf-token",
-            },
-            body: JSON.stringify({ groupId: userGroup._id, url: contentUrl }),
-          });
-          const data = await response.json();
-          if (data.success) {
-            // URL shared successfully
-            sharedItemsList.innerHTML += `<div>Shared: <a href="${contentUrl}" target="_blank" rel="noopener noreferrer">${contentUrl}</a></div>`;
-            loadGroupItems(userGroup._id);
-          } else {
-            // URL already exists
-            alert(data.message || "Failed to share the URL."); // Show existing URL message or fallback error
-          }
-        } catch (error) {
-          console.error("Error sharing content:", error);
-          alert("An error occurred while sharing the content."); // General error message
-        }
-      }
-    );
+    chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
+      const contentUrl = sanitizeInput(tabs[0].url);
+      await shareContent(contentUrl);
+    });
   });
 
-  // Update Group List
-  function updateGroupList() {
-    const groupInfo = document.getElementById("group-info");
-    groupInfo.innerHTML = userGroup
-      ? `
-        <div class="group-item" id="${userGroup._id}">
-            <span>${sanitizeInput(userGroup.name)}</span>
-            <span> (Code: ${sanitizeInput(
-              userGroup.code
-            )})</span> <!-- Displaying the group code -->
-            <button class="leave-group-btn share-button" data-group-id="${
-              userGroup._id
-            }">Leave</button>
-        </div>`
-      : "You are not part of any group.";
-  }
-
-  // Load Group Items
-  async function loadGroupItems(groupId) {
-    try {
-      const response = await fetch(`${apiUrl}/groups/${groupId}/items`);
-      const data = await response.json();
-      if (data.success) {
-        sharedItemsList.innerHTML = data.items
-          .map(
-            (item) => `
-                    <div class="shared-item">
-                        <a href="${sanitizeInput(
-                          item.url
-                        )}" target="_blank" rel="noopener noreferrer">${sanitizeInput(
-              item.url
-            )}</a>
-                    </div>`
-          )
-          .join("");
-      }
-    } catch (error) {
-      console.error("Error loading group items:", error);
-    }
-  }
-
-  // Leave Group
+  // Event: Leave Group
   groupList.addEventListener("click", function (event) {
     if (event.target.classList.contains("leave-group-btn")) {
       userGroup = null;
@@ -187,17 +182,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Tab switching logic
   document.querySelectorAll(".tab-link").forEach((tabLink) => {
     tabLink.addEventListener("click", function () {
-        // Remove 'active' class from all tab links and contents
-        document.querySelectorAll(".tab-link").forEach((link) => link.classList.remove("active"));
-        document.querySelectorAll(".tab-content").forEach((content) => content.classList.remove("active"));
-
-        // Add 'active' class to the clicked tab and its corresponding content
-        this.classList.add("active");
-        const tabName = this.querySelector(".tab-name").getAttribute("data-tab");
-        document.getElementById(tabName).classList.add("active");
+      document.querySelectorAll(".tab-link").forEach((link) => link.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach((content) => content.classList.remove("active"));
+      this.classList.add("active");
+      const tabName = this.querySelector(".tab-name").getAttribute("data-tab");
+      document.getElementById(tabName).classList.add("active");
     });
-});
+  });
 
+  // Initial setup: Check if the user is already in a group
+  chrome.storage.local.get(["userGroup"], function (result) {
+    if (result.userGroup) {
+      userGroup = result.userGroup;
+      updateGroupList();
+      loadGroupItems(userGroup._id);
+    }
+  });
 });
