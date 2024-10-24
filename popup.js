@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const shareContentBtn = document.getElementById("share-content-btn");
   const groupList = document.querySelector(".group-list");
   const sharedItemsList = document.querySelector(".shared-items-list");
-  const apiUrl = "https://share-url.onrender.com"; // Use HTTPS for secure communication
+  const apiUrl = "https://extension-silk.vercel.app"; // Use HTTPS for secure communication
   let userGroup = null;
 
   // Input sanitization function
@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function addSharedItemToUI(item) {
-    console.log("itemshared",item);
     const sharedItem = document.createElement("div");
     sharedItem.classList.add("shared-item");
     sharedItem.innerHTML = `<a href="${sanitizeInput(item.url)}" target="_blank" rel="noopener noreferrer">${sanitizeInput(item.url)}</a>`;
@@ -75,11 +74,8 @@ document.addEventListener("DOMContentLoaded", function () {
         body: JSON.stringify({ groupId: userGroup._id, url: contentUrl }),
       });
       const data = await response.json();
-      console.log("data",data);
-      
       if (data.success) {
         // Add the newly shared item to the UI directly
-        console.log("data-item",data.item);
         addSharedItemToUI(data.item); // Assume the backend returns the new item in `data.item`
       } else {
         alert(data.message || "Failed to share the URL.");
@@ -96,6 +92,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const groupName = sanitizeInput(document.getElementById("new-group-name").value.trim());
 
+    console.log("groupname",groupName);
+    
     if (!groupName) {
       return alert("Group name cannot be empty.");
     }
@@ -111,6 +109,8 @@ document.addEventListener("DOMContentLoaded", function () {
           body: JSON.stringify({ name: groupName }),
         });
         const data = await response.json();
+        console.log("new group",data);
+        
         if (data.success) {
           userGroup = data.group;
           chrome.storage.local.set({ userGroup });

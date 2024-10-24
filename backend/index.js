@@ -18,7 +18,7 @@ const config = {
 };
 
 // Middleware
-app.use(cors());  // Cross-Origin Resource Sharing
+app.use(cors("*"));  // Cross-Origin Resource Sharing
 app.use(helmet());  // Helmet helps secure the app by setting various HTTP headers
 app.use(bodyParser.json());
 
